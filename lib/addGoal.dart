@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'overview.dart';
 import 'goals.dart';
+import 'notificationservice.dart';
 
 class addGoal extends StatefulWidget {
   const addGoal({Key? key}) : super(key: key);
@@ -21,6 +20,8 @@ class _addGoalState extends State<addGoal> {
   bool datePicked = false;
 
   List userGoals = List.empty(growable: true);
+  String? userName;
+  List notifications = List.empty(growable: true);
 
   @override
   void didChangeDependencies() {
@@ -31,10 +32,9 @@ class _addGoalState extends State<addGoal> {
 
   @override
   void dispose() {
+    super.dispose();
     nameController.dispose();
     amountController.dispose();
-
-    super.dispose();
   }
 
   @override
@@ -174,6 +174,8 @@ class _addGoalState extends State<addGoal> {
 
     setState(() {
       userGoals = snapshot.data()!['goals'];
+      userName = snapshot.data()!['name'];
+      notifications = snapshot.data()!['notifications'];
     });
 
   }
@@ -203,10 +205,25 @@ class _addGoalState extends State<addGoal> {
     };
     tempArray.add(newGoal);
 
+    // ----------------------- notification code- -------------------
+    List tempList = notifications;
+    var notificationObj = {
+      'title': '$userName, your ${nameController.text} goal has ended',
+      'body': 'Congrats on achieving your goal, Keep going!',
+      'date': pickedDate,
+    };
+    tempList.add(notificationObj);
+
+    // ----------------------notification code ----------------------------
+
     // update specific fields of the document
     docUser.update({
       'goals': tempArray,
+      'notifications': tempList,
     });
+
+    // finally we want to schedule a notification for goal's due date
+    await createGoalNotification(userName!, pickedDate!, nameController.text);
 
     // after updating fireStore, hide loading dialog and navigate back to Goals screen of user
     Navigator.pop(context);

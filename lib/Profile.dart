@@ -3,6 +3,9 @@ import 'login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'payment.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -15,8 +18,12 @@ class _ProfileState extends State<Profile> {
   String name = "";
   TextEditingController? budgetController;
   TextEditingController? trackingController;
-  String picture = "";
   String email = "";
+  bool profile = false;
+
+  PlatformFile? profileImage;
+  String? downloadedURL;
+  String? downloadedName;
 
   @override
   void dispose() {
@@ -31,6 +38,7 @@ class _ProfileState extends State<Profile> {
     super.didChangeDependencies();
 
     fetchDB();
+    fetchProfileImage();
   }
 
   @override
@@ -47,7 +55,7 @@ class _ProfileState extends State<Profile> {
                   child: Material(
                     color: Colors.grey,
                     child: Ink.image(
-                        image: AssetImage('assets/images/profile.png'),
+                        image: profile? NetworkImage(downloadedURL!) : AssetImage('assets/images/profile.png') as ImageProvider,
                         fit: BoxFit.cover,
                         width: 110,
                         height: 110,
@@ -71,10 +79,7 @@ class _ProfileState extends State<Profile> {
                               icon: Icon(Icons.add_a_photo),
                               iconSize: 20,
                               color: Colors.white,
-                              onPressed: () {
-                                // TODO: pickImage function yet to be written
-
-                              },
+                              onPressed: selectProfileImage,
                             )
                           ),
                         ),
@@ -197,6 +202,43 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  Future fetchProfileImage() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser!.uid.toString();
+    final fetchPath = '${uid}/profile.jpg';
+
+    final ref = FirebaseStorage.instance.ref(fetchPath);
+    String url = await ref.getDownloadURL();
+    String name = ref.name;
+
+    setState(() {
+      downloadedURL = url;
+      downloadedName = name;
+    });
+  }
+
+  // works for both first or updating profile image
+  Future selectProfileImage() async {
+    final result = await FilePicker.platform.pickFiles();
+    if(result == null) return;
+
+    setState(() {
+      profileImage = result.files.first;
+    });
+  }
+
+  // works for both first or updating profile image
+  Future uploadProfileImage() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser!.uid.toString();
+
+    final path = '${uid}/profile.jpg';
+    final file = File(profileImage!.path!);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+    ref.putFile(file);
+  }
+
   Future updateDB() async {
     // update single user profile data by passing user's auth_id
 
@@ -218,6 +260,8 @@ class _ProfileState extends State<Profile> {
       'tracking_period': trackingController!.text,
     });
 
+    uploadProfileImage();
+
     // after updating fireStore, hide loading dialog
     Navigator.pop(context);
   }
@@ -234,9 +278,14 @@ class _ProfileState extends State<Profile> {
       name = snapshot.data()!['name'];
       budgetController = TextEditingController(text: '${snapshot.data()!['budget']}');
       trackingController = TextEditingController(text: '${snapshot.data()!['tracking_period']}');
-      picture = snapshot.data()!['picture'];
+      profile = snapshot.data()!['profile'];
       email = auth.currentUser!.email!;
     });
+
+    if(snapshot.data()!['profile'] == true)
+    {
+      fetchProfileImage();
+    }
 
   }
 

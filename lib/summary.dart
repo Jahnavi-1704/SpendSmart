@@ -63,7 +63,7 @@ class _summaryState extends State<summary> {
                 padding: const EdgeInsets.only(top: 35, left: 20, right: 20, bottom: 5),
                 child: Column(
                   children: [
-                    Text('Insights', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)),
+                    Text('Insights', style: TextStyle(fontSize: 30, color: Colors.black)),
                     Container(
                       width: double.infinity,
                       height: 50,
@@ -214,7 +214,6 @@ class _summaryState extends State<summary> {
                 ),
               ),
             ),
-            Text('${lineDisplayList.length}'),
 
           ],
         ),
@@ -404,9 +403,20 @@ class _summaryState extends State<summary> {
 
     // sort the expenses list in descending order
     List tempList = snapshot.data()!['expense_array'];
-    var ascendingList = snapshot.data()!['expense_array'];
-
     tempList.sort((b,a) => a['date'].compareTo(b['date']));
+    String recentMonth = DateFormat.LLL().format(tempList[0]['date'].toDate());
+    String recentYear = DateFormat.y().format(tempList[0]['date'].toDate());
+
+    List newArray = List.empty(growable: true);
+    var ascendingList = snapshot.data()!['expense_array'];
+    for (var expense in ascendingList)
+    {
+      if(DateFormat.LLL().format(expense['date'].toDate()) == recentMonth
+          && DateFormat.y().format(expense['date'].toDate()) == recentYear)
+      {
+        newArray.add(expense);
+      }
+    }
 
     List months = ['Jan',
       'Feb',
@@ -447,8 +457,6 @@ class _summaryState extends State<summary> {
     List newList = List.empty(growable: true);
     List pieTempList = List.empty(growable: true);
 
-    String recentMonth = DateFormat.LLL().format(tempList[0]['date'].toDate());
-    String recentYear = DateFormat.y().format(tempList[0]['date'].toDate());
     for (var expense in tempList)
     {
       if(DateFormat.LLL().format(expense['date'].toDate()) == recentMonth
@@ -468,8 +476,8 @@ class _summaryState extends State<summary> {
     num remainingBalance = snapshot.data()!['budget'] - totalExpense;
 
     List<FlSpot> tempCharts = List.empty(growable: true);
-    for(var expense in ascendingList) {
-      tempCharts.add(FlSpot(double.parse(DateFormat.d().format(expense['date'].toDate())),double.parse(expense['amount'])));
+    for(var expense in newArray) {
+      tempCharts.add(FlSpot(double.parse(DateFormat.d().format(expense['date'].toDate())),double.parse(expense['amount'].toString())));
     }
 
     for(var expense in newList) {
@@ -632,6 +640,10 @@ class _summaryState extends State<summary> {
 
       pieTempList.add(newObj);
     }
+
+    print('Displaying');
+    print(tempCharts);
+    print(pieTempList);
 
     setState(() {
       currentExpenses = newList;

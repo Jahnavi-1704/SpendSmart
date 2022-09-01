@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'notifications.dart';
 import 'package:intl/intl.dart';
-import 'dart:convert';
 import 'viewExpense.dart';
 
 class Home extends StatefulWidget {
@@ -18,9 +17,9 @@ class _HomeState extends State<Home> {
 
   // all the user data declared as state variables
   String userName = "";
-  String userPicture = "";
   int userBudget = 0;
   String userTrackingPeriod = "";
+  int balanceLeft = 0;
   List userExpenses = List.empty(growable: true);
 
   String greeting = "";
@@ -112,7 +111,7 @@ class _HomeState extends State<Home> {
                         padding: EdgeInsets.all(1.0),
                         child: IconButton(
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => notifications()));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Notifications()));
                             },
                             color: Colors.white,
                             icon: Icon(Icons.notifications)
@@ -168,7 +167,20 @@ class _HomeState extends State<Home> {
               width: double.infinity,
               height: 363,
               color: Colors.white,
-              child: ListView.builder(
+              child: currentExpenses.isEmpty ?
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 50),
+                child: Center(
+                    child: Column(
+                      children: [
+                        Text('You currently do not have any expenses'),
+                        Text('Start by adding something.'),
+                      ],
+                    ),
+                ),
+              )
+              :
+              ListView.builder(
                 itemCount: currentExpenses.length,
                 itemBuilder: (context, index) {
                   return Container(
@@ -182,7 +194,7 @@ class _HomeState extends State<Home> {
                         title: Text('${currentExpenses[index]['name']}', style:TextStyle(fontSize: 20)),
                         subtitle: Text(createDateFormat(index)),
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => viewExpense(userExpenses: userExpenses, currentExpenses: currentExpenses, index: index)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => viewExpense(userExpenses: userExpenses, currentExpenses: currentExpenses, index: index, userName: userName, trackingPeriod: userTrackingPeriod, currentBalance: balanceLeft)));
                         }
                       ),
                     ),
@@ -223,7 +235,7 @@ class _HomeState extends State<Home> {
                                   subtitle: Text(createRecurringDate(index)),
                                   onTap: () {
                                     // TODO: check this one, not sure
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => viewExpense(userExpenses: userExpenses, currentExpenses: recurringExpenses, index: index)));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => viewExpense(userExpenses: userExpenses, currentExpenses: currentExpenses, index: index, userName: userName, trackingPeriod: userTrackingPeriod, currentBalance: balanceLeft)));
 
                                   }
                               ),
@@ -346,9 +358,9 @@ class _HomeState extends State<Home> {
 
     setState(() {
       userName = snapshot.data()!['name'];
-      userPicture = snapshot.data()!['picture'];
       userTrackingPeriod = snapshot.data()!['tracking_period'];
       userBudget = snapshot.data()!['budget'];
+      balanceLeft = snapshot.data()!['current_balance'];
       userExpenses = snapshot.data()!['expense_array'];
     });
 

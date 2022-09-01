@@ -4,9 +4,9 @@ import 'screenTransition.dart';
 import 'dart:io';
 
 class TrackBy extends StatefulWidget {
-  const TrackBy({Key? key, required this.name, required this.picture}) : super(key: key);
+  const TrackBy({Key? key, required this.name, required this.profile}) : super(key: key);
   final String name;
-  final File? picture;
+  final bool profile;
 
   @override
   State<TrackBy> createState() => _TrackByState();
@@ -128,7 +128,7 @@ class _TrackByState extends State<TrackBy> {
               onPressed: () {
                 // function which passes all prev arguments and tracking period to Budget screen
 
-                Navigator.push(context, screenTransition(page: Budget(name: widget.name, picture: widget.picture, tracking_period: tracking_period)));
+                Navigator.push(context, screenTransition(page: Budget(name: widget.name, profile: widget.profile, tracking_period: tracking_period)));
               },
               child: const Padding(
                 padding: EdgeInsets.all(18),

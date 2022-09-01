@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'notificationservice.dart';
 import 'overview.dart';
 import 'goals.dart';
 
 class viewGoal extends StatefulWidget {
-  const viewGoal({Key? key, required this.userGoals, required this.currentGoals, required this.index}) : super(key: key);
+  const viewGoal({Key? key, required this.userGoals, required this.currentGoals, required this.index, required this.userName, required this.notifications}) : super(key: key);
+  final String userName;
   final List userGoals;
   final List currentGoals;
   final int index;
+  final List notifications;
 
   @override
   State<viewGoal> createState() => _viewGoalState();
@@ -38,10 +39,9 @@ class _viewGoalState extends State<viewGoal> {
 
   @override
   void dispose() {
+    super.dispose();
     nameController?.dispose();
     amountController?.dispose();
-
-    super.dispose();
   }
 
   @override
@@ -237,10 +237,39 @@ class _viewGoalState extends State<viewGoal> {
     };
     tempArray.add(updatedGoal);
 
+    // ----------------------- notification code- -------------------
+    List tempList = widget.notifications;
+    String searchTitle = "${widget.userName}, your $nameForUpdate goal has ended";
+    tempList.removeWhere((notification) => notification['title'] == searchTitle);
+    var notificationObj = {
+      'title': '${widget.userName}, your ${nameController!.text} goal has ended',
+      'body': 'Congrats on achieving your goal, Keep going!',
+      'date': pickedDate,
+    };
+    tempList.add(notificationObj);
+
+    // ----------------------notification code ----------------------------
+
     // update specific fields of the document
     docUser.update({
       'goals': tempArray,
+      'notifications': tempList,
     });
+
+    // finally retrieve list of notifications to cancel prev goal one and schedule a new one
+    var scheduledList = await retrieveNotifications();
+    for(var notification in scheduledList)
+    {
+      if(notification.content?.title == searchTitle)
+      {
+        // get the id of this notification and cancel it
+        int? id = notification.content?.id;
+        await cancelNotification(id!);
+        break;
+      }
+    }
+
+    await createGoalNotification(widget.userName, pickedDate!, nameController!.text);
 
     // after updating fireStore, hide loading dialog and navigate back to Goals screen of user
     Navigator.pop(context);
@@ -268,10 +297,31 @@ class _viewGoalState extends State<viewGoal> {
     // delete the goal from list
     tempArray.removeWhere((expense) => expense['name'] == nameForUpdate);
 
+    // ----------------------- notification code- -------------------
+    List tempList = widget.notifications;
+    String searchTitle = "${widget.userName}, your $nameForUpdate goal has ended";
+    tempList.removeWhere((notification) => notification['title'] == searchTitle);
+
+    // ----------------------notification code ----------------------------
+
     // update specific fields of the document
     docUser.update({
       'goals': tempArray,
+      'notifications': tempList,
     });
+
+    // finally retrieve list of notifications to cancel prev goal one
+    var scheduledList = await retrieveNotifications();
+    for(var notification in scheduledList)
+    {
+      if(notification.content?.title == searchTitle)
+      {
+        // get the id of this notification and cancel it
+        int? id = notification.content?.id;
+        await cancelNotification(id!);
+        break;
+      }
+    }
 
     // after updating fireStore, hide loading dialog and navigate back to Goals screen of user
     Navigator.pop(context);

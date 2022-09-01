@@ -1,3 +1,6 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'trackBy.dart';
@@ -14,8 +17,9 @@ class Introduction extends StatefulWidget {
 
 class _IntroductionState extends State<Introduction> {
   final nameController = TextEditingController();
-  bool userImage = false;
-  File? imageFile;
+
+  bool profile = false;
+  PlatformFile? profileImage;
 
   @override
   void dispose() {
@@ -82,7 +86,7 @@ class _IntroductionState extends State<Introduction> {
             MaterialButton(
               color: Color.fromRGBO(0, 51, 102, 0.9),
               shape: const CircleBorder(),
-              onPressed: pickImage,
+              onPressed: selectProfileImage,
               child: const Padding(
                 padding: EdgeInsets.all(18),
                 child: Center(child: Icon(Icons.add, color: Colors.white, size: 25)),
@@ -92,12 +96,14 @@ class _IntroductionState extends State<Introduction> {
             GestureDetector(
               onTap: () {
                 // function which passes name and picture(if any) to TrackBy screen
+                // need to upload profile picture to Firebase Storage before moving on
+                uploadProfileImage();
 
-                Navigator.push(context, screenTransition(page: TrackBy(name: nameController.text, picture: imageFile)));
+                Navigator.push(context, screenTransition(page: TrackBy(name: nameController.text, profile: profile)));
               },
               child: Center(
                 child: Text(
-                  userImage ?
+                  profile ?
                   'Proceed'
                       :
                   'Skip for now',
@@ -116,20 +122,25 @@ class _IntroductionState extends State<Introduction> {
     );
   }
 
-  Future pickImage() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if(image == null) return;
+  Future selectProfileImage() async {
+    final result = await FilePicker.platform.pickFiles();
+    if(result == null) return;
 
-      final imageTemporary = File(image.path);
-      setState(() {
-        imageFile = imageTemporary;
-        userImage = true;
-      });
-
-    } on PlatformException catch (e) {
-      print('Failed to pick image from gallery: $e');
-    }
-
+    setState(() {
+      profile = true;
+      profileImage = result.files.first;
+    });
   }
+
+  Future uploadProfileImage() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser!.uid.toString();
+
+    final path = '${uid}/profile.jpg';
+    final file = File(profileImage!.path!);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+    ref.putFile(file);
+  }
+
 }

@@ -49,6 +49,12 @@ dependencies:
   fl_chart: ^0.55.1
   percent_indicator: ^4.2.2
   syncfusion_flutter_gauges: ^20.2.45
+  flutter_local_notifications: ^9.8.0+1
+  timezone: ^0.8.0
+  awesome_notifications: ^0.6.21
+  file_picker: ^5.0.1
+  firebase_storage: ^10.3.7
+  plaid_flutter: ^2.2.2
 
 dev_dependencies:
   flutter_test:

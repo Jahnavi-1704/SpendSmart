@@ -18,6 +18,8 @@ class _GoalsState extends State<Goals> {
   List currentGoals = List.empty(growable: true);
   num? userSaved;
   num? userExpense;
+  String userName = "";
+  List notifications = List.empty(growable: true);
 
   @override
   void didChangeDependencies() {
@@ -84,7 +86,7 @@ class _GoalsState extends State<Goals> {
                           title: Text('${currentGoals[index]['name']}', style:TextStyle(fontSize: 20)),
                           subtitle: Text('Saved \$${currentGoals[index]['saved']} till now'),
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => viewGoal(userGoals: userGoals, currentGoals: currentGoals, index: index)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => viewGoal(userGoals: userGoals, currentGoals: currentGoals, index: index, userName: userName, notifications: notifications)));
                           }
                       ),
                     ),
@@ -109,35 +111,24 @@ class _GoalsState extends State<Goals> {
 
     setState(() {
       userGoals = snapshot.data()!['goals'];
+      userName = snapshot.data()!['name'];
+      notifications: snapshot.data()!['notifications'];
     });
 
     // sort the goals list in ascending order
     List tempList = snapshot.data()!['goals'];
     tempList.sort((a,b) => a['date'].compareTo(b['date']));
 
-    List newList = List.empty(growable: true);
     num tempSaved = 0;
     num tempExpense = 0;
 
     for(var goal in tempList) {
-      // delete the goals which are already expired from currentList and fireStore
-      if(goal['date'].toDate().compareTo(DateTime.now()) > 0) {
-        // goal is expired
-        newList.add(goal);
-      }
-    }
-
-    doc.update({
-      'goals': newList,
-    });
-
-    for(var goal in newList) {
       tempExpense =  tempExpense + goal['amount'];
       tempSaved = tempSaved + goal['saved'];
     }
 
     setState(() {
-      currentGoals = newList;
+      currentGoals = tempList;
       userSaved = tempSaved;
       userExpense = tempExpense;
     });

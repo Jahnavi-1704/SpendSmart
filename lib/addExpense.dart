@@ -1,7 +1,7 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,12 +19,16 @@ class _addExpenseState extends State<addExpense> {
   final amountController = TextEditingController();
   bool recurring = false;
   String type = "";
-  File? receipt;
-  bool receiptUploaded = false;
   DateTime? pickedDate;
   bool datePicked = false;
 
   List userExpenses = List.empty(growable: true);
+  String? userName;
+  String? trackingPeriod;
+  int currentBalance = 0;
+
+  bool receipt = false;
+  PlatformFile? receiptImage;
 
   List iconTypes = [
     {
@@ -259,16 +263,50 @@ class _addExpenseState extends State<addExpense> {
                     Text('Recurring', style: TextStyle(fontSize: 20.0)),
                   ],
                 ),
+
+                receipt?
+                    ElevatedButton(
+                        onPressed: () {
+                          // display image in a dialog
+                          showDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (context) => Container(
+                                padding: EdgeInsets.only(top: 50),
+                                child: Column(
+                                  children: [
+                                    Image.file(File(receiptImage!.path!), width: 200, height: 300),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        selectReceiptImage();
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('Change Receipt', style: TextStyle(fontSize: 20)),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: StadiumBorder(),
+                                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                          );
+                        },
+                        child: Text('View Receipt')
+                    )
+                    :
                 Padding(
                   padding: const EdgeInsets.only(right: 140.0),
                   child: TextButton(
-                    onPressed: pickImage,
+                    onPressed: selectReceiptImage,
                     child: Text(
                       "+ Click to add receipt",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
                 ),
+
+
                 SizedBox(height: 5),
                 MaterialButton(
                   color: Colors.indigo,
@@ -317,6 +355,9 @@ class _addExpenseState extends State<addExpense> {
 
     setState(() {
       userExpenses = snapshot.data()!['expense_array'];
+      userName = snapshot.data()!['name'];
+      trackingPeriod = snapshot.data()!['tracking_period'];
+      currentBalance = snapshot.data()!['current_balance'];
     });
 
   }
@@ -343,7 +384,7 @@ class _addExpenseState extends State<addExpense> {
       'amount': int.parse(amountController.text),
       'date': datePicked ?  pickedDate : DateTime.now(),
       'recurring': recurring,
-      'receipt': receiptUploaded ? receipt : "",
+      'receipt': receipt,
       'type': type,
     };
     tempArray.add(newExpense);
@@ -353,7 +394,9 @@ class _addExpenseState extends State<addExpense> {
       'expense_array': tempArray,
     });
 
-    // after updating firestore, hide loading dialog and navigate back to Home screen of user
+    uploadReceiptImage();
+
+    // after updating fireStore, hide loading dialog and navigate back to Home screen of user
     Navigator.pop(context);
     Navigator.push(context, MaterialPageRoute(builder: (context) => Overview()));
   }
@@ -363,21 +406,26 @@ class _addExpenseState extends State<addExpense> {
     return temp;
   }
 
-  Future pickImage() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if(image == null) return;
+  Future selectReceiptImage() async {
+    final result = await FilePicker.platform.pickFiles();
+    if(result == null) return;
 
-      final imageTemporary = File(image.path);
-      setState(() {
-        receipt = imageTemporary;
-        receiptUploaded = true;
-      });
+    setState(() {
+      receipt = true;
+      receiptImage = result.files.first;
+    });
+  }
 
-    } on PlatformException catch (e) {
-      print('Failed to pick image from gallery: $e');
-    }
+  Future uploadReceiptImage() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser!.uid.toString();
 
+    // TODO: replace fees with current expense's name
+    final path = '${uid}/${nameController.text}.jpg';
+    final file = File(receiptImage!.path!);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+    ref.putFile(file);
   }
 
 }

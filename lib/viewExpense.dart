@@ -1,14 +1,17 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'overview.dart';
 
 class viewExpense extends StatefulWidget {
-  const viewExpense({Key? key, required this.userExpenses, required this.currentExpenses, required this.index}) : super(key: key);
+  const viewExpense({Key? key, required this.userExpenses, required this.currentExpenses, required this.index, required this.userName, required this.trackingPeriod, required this.currentBalance}) : super(key: key);
+  final String userName;
+  final String trackingPeriod;
+  final int currentBalance;
   final List userExpenses;
   final List currentExpenses;
   final int index;
@@ -23,10 +26,14 @@ class _viewExpenseState extends State<viewExpense> {
   TextEditingController? amountController;
   bool recurring = false;
   String type = "";
-  File? receipt;
-  bool receiptUploaded = false;
   DateTime? pickedDate;
   bool datePicked = true;
+
+  bool receipt = false;
+  PlatformFile? receiptImage;
+  String? receiptURL;
+  String? receiptName;
+  int receiptType = 1; // user has not added a receipt
 
   List iconTypes = [
     {
@@ -102,11 +109,13 @@ class _viewExpenseState extends State<viewExpense> {
     type = widget.currentExpenses[widget.index]['type'];
     pickedDate = widget.currentExpenses[widget.index]['date'].toDate();
 
-    if(widget.currentExpenses[widget.index]['receipt'].isNotEmpty)
-      {
-        receiptUploaded = true;
-        receipt = widget.currentExpenses[widget.index]['receipt'];
-      }
+    receipt = widget.currentExpenses[widget.index]['receipt'];
+    if(widget.currentExpenses[widget.index]['receipt'] == true)
+    {
+      // user has prev added a receipt
+      fetchReceiptImage();
+      receiptType = 2;
+    }
 
   }
 
@@ -272,16 +281,53 @@ class _viewExpenseState extends State<viewExpense> {
                     Text('Recurring', style: TextStyle(fontSize: 20.0)),
                   ],
                 ),
+
+                receipt?
+                ElevatedButton(
+                    onPressed: () {
+                      // display image in a dialog
+                      showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => Container(
+                            padding: EdgeInsets.only(top: 50),
+                            child: Column(
+                              children: [
+                                receiptType == 1 ?
+                                  Image.file(File(receiptImage!.path!), width: 200, height: 300)
+                                :
+                                  Image.network(receiptURL!, width: 200, height: 300),
+
+                                ElevatedButton(
+                                  onPressed: () {
+                                    selectReceiptImage();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Change Receipt', style: TextStyle(fontSize: 20)),
+                                  style: ElevatedButton.styleFrom(
+                                    shape: StadiumBorder(),
+                                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                      );
+                    },
+                    child: Text('View Receipt')
+                )
+                    :
                 Padding(
                   padding: const EdgeInsets.only(right: 140.0),
                   child: TextButton(
-                    onPressed: pickImage,
+                    onPressed: selectReceiptImage,
                     child: Text(
                       "+ Click to add receipt",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
                 ),
+
                 SizedBox(height: 5),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 110),
@@ -366,7 +412,7 @@ class _viewExpenseState extends State<viewExpense> {
       'amount': int.parse(amountController!.text),
       'date': datePicked ?  pickedDate : DateTime.now(),
       'recurring': recurring,
-      'receipt': receiptUploaded ? receipt : "",
+      'receipt': receipt,
       'type': type,
     };
     tempArray.add(updatedExpense);
@@ -375,6 +421,8 @@ class _viewExpenseState extends State<viewExpense> {
     docUser.update({
       'expense_array': tempArray,
     });
+
+    uploadReceiptImage();
 
     // after updating fireStore, hide loading dialog and navigate back to Home screen of user
     Navigator.pop(context);
@@ -417,21 +465,44 @@ class _viewExpenseState extends State<viewExpense> {
     return temp;
   }
 
-  Future pickImage() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if(image == null) return;
+  Future selectReceiptImage() async {
+    final result = await FilePicker.platform.pickFiles();
+    if(result == null) return;
 
-      final imageTemporary = File(image.path);
-      setState(() {
-        receipt = imageTemporary;
-        receiptUploaded = true;
-      });
+    setState(() {
+      receipt = true;
+      receiptImage = result.files.first;
+      receiptType = 1;
+    });
+  }
 
-    } on PlatformException catch (e) {
-      print('Failed to pick image from gallery: $e');
-    }
+  Future uploadReceiptImage() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser!.uid.toString();
 
+    // TODO: replace fees with current expense's name
+    final path = '${uid}/${nameController!.text}.jpg';
+    final file = File(receiptImage!.path!);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+    ref.putFile(file);
+  }
+
+  Future fetchReceiptImage() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser!.uid.toString();
+
+    // TODO: replace fees with current expense's name
+    final fetchPath = '${uid}/${widget.currentExpenses[widget.index]['name']}.jpg';
+
+    final ref = FirebaseStorage.instance.ref(fetchPath);
+    String url = await ref.getDownloadURL();
+    String name = ref.name;
+
+    setState(() {
+      receiptURL = url;
+      receiptName = name;
+    });
   }
 
 }
