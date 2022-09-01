@@ -6,6 +6,8 @@ import 'payment.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import 'package:bouncing_widget/bouncing_widget.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -25,6 +27,8 @@ class _ProfileState extends State<Profile> {
   String? downloadedURL;
   String? downloadedName;
 
+  bool initialLoad = true;
+
   @override
   void dispose() {
     budgetController?.dispose();
@@ -39,12 +43,20 @@ class _ProfileState extends State<Profile> {
 
     fetchDB();
     fetchProfileImage();
+
+    initialLoad = false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
+      body: initialLoad == true ?
+      SpinKitPouringHourGlassRefined(
+        color: Colors.orange,
+        size: 50.0,
+      )
+          :
+      ListView(
         physics: BouncingScrollPhysics(),
         children: [
           SizedBox(height: 24),
@@ -105,16 +117,26 @@ class _ProfileState extends State<Profile> {
           ),
           SizedBox(height: 20),
           Center(
-            child: ElevatedButton(
+            child: BouncingWidget(
               onPressed: () {
-                // navigate to payment screen
                 Navigator.push(context, MaterialPageRoute(builder: (context) => payment()));
               },
-              child: Text('Upgrade to PRO', style: TextStyle(fontSize: 17)),
-              style: ElevatedButton.styleFrom(
-                onPrimary: Colors.white,
-                shape: StadiumBorder(),
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              child: ElevatedButton(
+                onPressed: () {
+                  // navigate to payment screen
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => payment()));
+                },
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Colors.white,
+                  shape: StadiumBorder(),
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                ),
+                child: BouncingWidget(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => payment()));
+                    },
+                    child: Text('Upgrade to PRO', style: TextStyle(fontSize: 17))
+                ),
               ),
             ),
           ),

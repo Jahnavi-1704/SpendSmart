@@ -5,6 +5,7 @@ import 'goals.dart';
 import 'summary.dart';
 import 'addExpense.dart';
 import 'addGoal.dart';
+import 'package:bouncing_widget/bouncing_widget.dart';
 
 class Overview extends StatefulWidget {
   const Overview({Key? key}) : super(key: key);
@@ -33,7 +34,6 @@ class _OverviewState extends State<Overview> {
         bucket: bucket,
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
         onPressed: () {
           // display option to add either expense or goal
           showDialog(
@@ -74,6 +74,7 @@ class _OverviewState extends State<Overview> {
           );
         },
         backgroundColor: Colors.blue[900],
+        child: Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(

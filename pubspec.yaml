@@ -55,6 +55,11 @@ dependencies:
   file_picker: ^5.0.1
   firebase_storage: ^10.3.7
   plaid_flutter: ^2.2.2
+  scaffold_gradient_background:
+  animated_text_kit: ^4.2.2
+  bouncing_widget: ^2.0.0
+  flutter_spinkit: ^5.1.0
+  loading_animation_widget: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:

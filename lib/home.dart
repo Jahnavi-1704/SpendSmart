@@ -4,6 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'notifications.dart';
 import 'package:intl/intl.dart';
 import 'viewExpense.dart';
+import 'package:bouncing_widget/bouncing_widget.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -62,6 +65,8 @@ class _HomeState extends State<Home> {
 
   int currentBalance = 0;
 
+  bool initialLoad = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -76,9 +81,15 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[900],
+      backgroundColor: initialLoad == true ? Colors.white : Colors.blue[900],
       body: SafeArea(
-        child: Column(
+        child: initialLoad == true ?
+        SpinKitPouringHourGlassRefined(
+          color: Colors.orange,
+          size: 50.0,
+        )
+            :
+        Column(
           children: [
             SizedBox(height: 20),
             Padding(
@@ -103,18 +114,23 @@ class _HomeState extends State<Home> {
                           ),
                         ],
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blue[700],
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        padding: EdgeInsets.all(1.0),
-                        child: IconButton(
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => Notifications()));
-                            },
-                            color: Colors.white,
-                            icon: Icon(Icons.notifications)
+                      BouncingWidget(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Notifications()));
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.blue[700],
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          padding: EdgeInsets.all(1.0),
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Notifications()));
+                              },
+                              color: Colors.white,
+                              icon: Icon(Icons.notifications)
+                          ),
                         ),
                       ),
                     ],
@@ -543,6 +559,10 @@ class _HomeState extends State<Home> {
           recurringExpenses = newRecurring;
         });
       }
+
+    setState(() {
+      initialLoad = false;
+    });
 
   }
 

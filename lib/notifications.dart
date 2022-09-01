@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'overview.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({Key? key}) : super(key: key);
@@ -14,6 +15,8 @@ class _NotificationsState extends State<Notifications> {
   List notifications = List.empty(growable: true);
   List pastNotifications = List.empty(growable: true);
 
+  bool initialLoad = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -24,7 +27,13 @@ class _NotificationsState extends State<Notifications> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: initialLoad == true ?
+      SpinKitPouringHourGlassRefined(
+        color: Colors.orange,
+        size: 50.0,
+      )
+          :
+      Column(
         children: [
           SizedBox(height: 30),
           Container(
@@ -118,6 +127,7 @@ class _NotificationsState extends State<Notifications> {
 
     setState(() {
       pastNotifications = newList;
+      initialLoad = false;
     });
 
   }

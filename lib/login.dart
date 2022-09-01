@@ -6,6 +6,7 @@ import 'Utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home.dart';
 import 'overview.dart';
+import 'package:bouncing_widget/bouncing_widget.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({Key? key}) : super(key: key);
@@ -54,8 +55,8 @@ class _LogInScreenState extends State<LogInScreen> {
                     style: TextStyle(color: Color.fromRGBO(0, 51, 102, 0.5), fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                   SizedBox(width: 5),
-                  GestureDetector(
-                    onTap: () {
+                  BouncingWidget(
+                    onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
                     },
                     child: Text(
@@ -157,15 +158,18 @@ class _LogInScreenState extends State<LogInScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              Container(
-                alignment: Alignment.center,
-                height: MediaQuery.of(context).size.height * 0.08,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16), color: Color.fromRGBO(0, 51, 102, 0.9)),
-                child: TextButton(
-                    onPressed: signIn,
-                    child: Text('Log In', style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.w700))
+              BouncingWidget(
+                onPressed: signIn,
+                child: Container(
+                  alignment: Alignment.center,
+                  height: MediaQuery.of(context).size.height * 0.08,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16), color: Color.fromRGBO(0, 51, 102, 0.9)),
+                  child: BouncingWidget(
+                      onPressed: signIn,
+                      child: Text('Log In', style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.w700))
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -176,17 +180,20 @@ class _LogInScreenState extends State<LogInScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              Container(
-                height: 50,
-                margin: EdgeInsets.symmetric(horizontal: 70),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.blue,
-                ),
-                child: Center(
-                  child: TextButton(
-                    onPressed: facebookSignIn,
-                    child: Text("Facebook", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              BouncingWidget(
+                onPressed: facebookSignIn,
+                child: Container(
+                  height: 50,
+                  margin: EdgeInsets.symmetric(horizontal: 70),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.blue,
+                  ),
+                  child: Center(
+                    child: BouncingWidget(
+                        onPressed: facebookSignIn,
+                        child: Text("Facebook", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))
+                    ),
                   ),
                 ),
               ),

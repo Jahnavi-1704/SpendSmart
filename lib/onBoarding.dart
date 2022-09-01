@@ -8,6 +8,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'login.dart';
 import 'signIn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bouncing_widget/bouncing_widget.dart';
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({Key? key}) : super(key: key);
@@ -50,10 +51,6 @@ class _OnBoardingState extends State<OnBoarding> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // TextButton(
-          //     onPressed: () => controller.jumpToPage(2),
-          //     child: const Text('Skip', style: TextStyle(fontSize: 18, color: Colors.white54)),
-          // ),
           Center(
             child: SmoothPageIndicator(
                 controller: controller,
@@ -82,9 +79,21 @@ class _OnBoardingState extends State<OnBoarding> {
                 controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
               }
             },
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(18),
-              child: Icon(Icons.arrow_forward_ios, color: Colors.indigo, size: 25),
+              child: BouncingWidget(
+                  onPressed: () async {
+                    if(isLastPage) {
+                      // final prefs = await SharedPreferences.getInstance();
+                      // prefs.setBool('showSignIn', true);
+
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => LogInScreen()));
+                    } else {
+                      controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                    }
+                  },
+                  child: Icon(Icons.arrow_forward_ios, color: Colors.indigo, size: 25)
+              ),
             ),
           )
         ],

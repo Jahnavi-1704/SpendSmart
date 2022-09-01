@@ -18,7 +18,7 @@ Future main() async {
           channelDescription: 'notification',
           defaultColor: Colors.indigo,
           ledColor: Colors.white,
-          playSound: true,
+          playSound: false,
           enableLights: true,
           enableVibration: true,
         )

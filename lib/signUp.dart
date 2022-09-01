@@ -4,6 +4,7 @@ import 'introduction.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'Utils.dart';
+import 'package:bouncing_widget/bouncing_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -53,8 +54,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: TextStyle(color: Color.fromRGBO(0, 51, 102, 0.5), fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                   SizedBox(width: 5),
-                  GestureDetector(
-                    onTap: () {
+                  BouncingWidget(
+                    onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => LogInScreen()));
                     },
                     child: Text(
@@ -185,15 +186,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   null
               ),
               SizedBox(height: 10),
-              Container(
-                alignment: Alignment.center,
-                height: MediaQuery.of(context).size.height * 0.08,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16), color: Color.fromRGBO(0, 51, 102, 0.9)),
-                child: TextButton(
-                    onPressed: register,
-                    child: Text('Sign Up', style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.w700))
+              BouncingWidget(
+                onPressed: register,
+                child: Container(
+                  alignment: Alignment.center,
+                  height: MediaQuery.of(context).size.height * 0.08,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16), color: Color.fromRGBO(0, 51, 102, 0.9)),
+                  child: BouncingWidget(
+                      onPressed: register,
+                      child: Text('Sign Up', style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.w700))
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -204,17 +208,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              Container(
-                height: 50,
-                margin: EdgeInsets.symmetric(horizontal: 70),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.blue,
-                ),
-                child: Center(
-                  child: TextButton(
-                    onPressed: facebookSignIn,
-                    child: Text("Facebook", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              BouncingWidget(
+                onPressed: facebookSignIn,
+                child: Container(
+                  height: 50,
+                  margin: EdgeInsets.symmetric(horizontal: 70),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.blue,
+                  ),
+                  child: Center(
+                    child: BouncingWidget(
+                        onPressed: facebookSignIn,
+                        child: Text("Facebook", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))
+                    ),
                   ),
                 ),
               ),

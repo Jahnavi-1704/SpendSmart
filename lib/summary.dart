@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'indicator.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class summary extends StatefulWidget {
   const summary({Key? key}) : super(key: key);
@@ -36,6 +37,8 @@ class _summaryState extends State<summary> {
 
   List displayList = List.empty(growable: true);
 
+  bool initialLoad = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -46,8 +49,14 @@ class _summaryState extends State<summary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black38,
-      body: SingleChildScrollView(
+      backgroundColor: initialLoad == true ? Colors.white : Colors.black38,
+      body: initialLoad == true ?
+      SpinKitPouringHourGlassRefined(
+        color: Colors.orange,
+        size: 50.0,
+      )
+          :
+      SingleChildScrollView(
         child: Column(
           children: [
             Container(
@@ -476,6 +485,8 @@ class _summaryState extends State<summary> {
     num remainingBalance = snapshot.data()!['budget'] - totalExpense;
 
     List<FlSpot> tempCharts = List.empty(growable: true);
+    // for display make sure to sort line chart list in ascending order
+    newArray.sort((a,b) => a['date'].compareTo(b['date']));
     for(var expense in newArray) {
       tempCharts.add(FlSpot(double.parse(DateFormat.d().format(expense['date'].toDate())),double.parse(expense['amount'].toString())));
     }
@@ -652,6 +663,10 @@ class _summaryState extends State<summary> {
       pieDisplayList = pieTempList;
     });
 
+    setState(() {
+      initialLoad = false;
+    });
+
   }
 
   Future displayChange(int index) async {
@@ -661,6 +676,16 @@ class _summaryState extends State<summary> {
 
     List tempList = userExpenses;
     var ascendingList = userExpenses;
+    List newArray = List.empty(growable: true);
+    for (var expense in ascendingList)
+    {
+      if(DateFormat.LLL().format(expense['date'].toDate()) == displayList[index]
+          && DateFormat.y().format(expense['date'].toDate()) == currentYear)
+      {
+        newArray.add(expense);
+      }
+    }
+
     tempList.sort((b,a) => a['date'].compareTo(b['date']));
 
     List newList = List.empty(growable: true);
@@ -697,7 +722,9 @@ class _summaryState extends State<summary> {
     num remainingBalance = userBudget - totalExpense;
 
     List<FlSpot> tempCharts = List.empty(growable: true);
-    for(var expense in ascendingList) {
+    // for display make sure to sort line chart list in ascending order
+    newArray.sort((a,b) => a['date'].compareTo(b['date']));
+    for(var expense in newArray) {
       tempCharts.add(FlSpot(double.parse(DateFormat.d().format(expense['date'].toDate())),expense['amount'].toDouble()));
     }
 

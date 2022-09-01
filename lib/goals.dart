@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'viewGoal.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Goals extends StatefulWidget {
   const Goals({Key? key}) : super(key: key);
@@ -21,6 +22,8 @@ class _GoalsState extends State<Goals> {
   String userName = "";
   List notifications = List.empty(growable: true);
 
+  bool initialLoad = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -32,7 +35,13 @@ class _GoalsState extends State<Goals> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: Column(
+        child: initialLoad == true ?
+        SpinKitPouringHourGlassRefined(
+          color: Colors.orange,
+          size: 50.0,
+        )
+            :
+        Column(
           children: [
             SizedBox(height: 50),
             Center(
@@ -131,6 +140,7 @@ class _GoalsState extends State<Goals> {
       currentGoals = tempList;
       userSaved = tempSaved;
       userExpense = tempExpense;
+      initialLoad = false;
     });
   }
 
