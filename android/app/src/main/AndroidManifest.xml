@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.spend_smart">
-   <application
+    <application
         android:label="spend_smart"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

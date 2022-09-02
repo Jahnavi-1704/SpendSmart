@@ -60,6 +60,11 @@ dependencies:
   bouncing_widget: ^2.0.0
   flutter_spinkit: ^5.1.0
   loading_animation_widget: ^1.2.0+3
+  flutter_credit_card: ^3.0.3
+  flutter_stripe: ^4.0.0
+  http: ^0.13.5
+  progress_dialog: ^1.2.4
+  flutter_facebook_auth: ^4.4.1
 
 dev_dependencies:
   flutter_test:
