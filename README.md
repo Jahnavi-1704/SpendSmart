@@ -1,16 +1,15 @@
-# spend_smart
+# SpendSmart
 
-A new Flutter project.
+A smart expense tracking mobile app built using Flutter & Dart
 
-## Getting Started
+## Demo
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+## How to use
+This app is currently under development. I plan to deploy it to both Google PlayStore and Apple
+AppStore once everything is complete. Till then you will have to use the app locally on an 
+Android emulator.
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
