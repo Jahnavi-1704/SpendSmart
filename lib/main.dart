@@ -6,6 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'Utils.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'overview.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:http/http.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +27,9 @@ Future main() async {
       ]
   );
   await Firebase.initializeApp();
+
+  Stripe.publishableKey = "pk_test_51LdOzzEAiyBHWqZYeMpMPRZ9yzdxNRL6wJnrDSNLibavK0nEfUFI34xxZnLQ7ze7t8BlORqdGLMaLOp69HZbBwMX00KiLM0h48";
+  // await Stripe.instance.applySettings();
 
   runApp(MyApp());
 }

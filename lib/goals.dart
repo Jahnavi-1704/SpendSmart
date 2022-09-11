@@ -29,6 +29,9 @@ class _GoalsState extends State<Goals> {
     super.didChangeDependencies();
 
     readGoalData();
+    setState(() {
+      initialLoad = false;
+    });
   }
 
   @override
@@ -140,7 +143,6 @@ class _GoalsState extends State<Goals> {
       currentGoals = tempList;
       userSaved = tempSaved;
       userExpense = tempExpense;
-      initialLoad = false;
     });
   }
 

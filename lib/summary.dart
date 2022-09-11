@@ -44,6 +44,9 @@ class _summaryState extends State<summary> {
     super.didChangeDependencies();
 
     fetchUserData();
+    setState(() {
+      initialLoad = false;
+    });
   }
 
   @override
@@ -661,10 +664,6 @@ class _summaryState extends State<summary> {
       currentBalance = remainingBalance;
       lineDisplayList = tempCharts;
       pieDisplayList = pieTempList;
-    });
-
-    setState(() {
-      initialLoad = false;
     });
 
   }

@@ -76,6 +76,9 @@ class _HomeState extends State<Home> {
 
     print('fetching data');
     readUserData();
+    setState(() {
+      initialLoad = false;
+    });
   }
 
   @override
@@ -559,10 +562,6 @@ class _HomeState extends State<Home> {
           recurringExpenses = newRecurring;
         });
       }
-
-    setState(() {
-      initialLoad = false;
-    });
 
   }
 
