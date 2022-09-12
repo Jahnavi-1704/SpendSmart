@@ -18,6 +18,8 @@ A smart expense tracking mobile app built using Flutter & Dart
 
 ![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_1.png?raw=true | width=100)
 
+<img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_1.png" width="100">
+
 ![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_2.png?raw=true)
 
 ![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_3.png?raw=true)
