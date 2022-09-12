@@ -2,7 +2,7 @@
 
 A smart expense tracking mobile app built using Flutter & Dart
 
-## Demo
+## Preview
 
 ## Features
 
