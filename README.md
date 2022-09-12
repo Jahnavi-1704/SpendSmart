@@ -16,18 +16,10 @@ A smart expense tracking mobile app built using Flutter & Dart
 
 ## Screenshots
 
-<img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_1.png" width="300">   <img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_2.png" width="300">
+<img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_1.png" width="300">               <img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_2.png" width="300">               <img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_3.png" width="300">
 
-![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_2.png?raw=true)
+<img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/home.png" width="300">               <img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/view.png" width="300">
 
-![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/getting_started_3.png?raw=true)
+<img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/insights.png" width="300">               <img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/goals.png" width="300">
 
-![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/home.png?raw=true)
-
-![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/view.png?raw=true)
-
-![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/insights.png?raw=true)
-
-![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/profile.png?raw=true)
-
-![Getting Started 1](https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/payment.png?raw=true)
+<img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/profile.png" width="300">               <img src="https://github.com/Jahnavi-1704/SpendSmart/blob/master/screenshots/payment.png" width="300">
