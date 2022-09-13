@@ -7,7 +7,7 @@ A smart expense tracking mobile app built using Flutter & Dart
 
 ## Description
 
-- Store personal expenses using ## Firebase Auth and Cloud FireStore
+- Store personal expenses using Firebase Auth and Cloud FireStore
 - Track current balance and notify user at end of each tracking period to contribute savings to set goals using local notifications
 - Upload expense receipts to Firebase Storage
 - Analyze spending trends monthly using Google Charts API
